@@ -8,16 +8,21 @@
 
 	<div
 		:class="{ complete: todo.isComplete }"
-		@click="toggleTodo(todo)"
+		class="todo__list"
 		v-for="todo in todos"
 		:key="todo.id"
 	>
-		<p>{{ todo.item }}</p>
-	</div>
-
-	<div>
-		<h1>Vuex Store Todos</h1>
-		<p>{{ $store.state.todos }}</p>
+		<div>
+			<p>{{ todo.item }}</p>
+		</div>
+		<div>
+			<button v-if="todo.isComplete === false" @click="toggleTodo(todo)">
+				Complete
+			</button>
+			<button v-else @click="toggleTodo(todo)">Undo</button>
+			<button @click="editTodo(todo)">Edit</button>
+			<button @click="removeTodo(todo)">Remove</button>
+		</div>
 	</div>
 </template>
 
@@ -41,13 +46,27 @@ export default {
 			};
 			todo.item = this.newTodo;
 			this.todos.push(todo);
-			this.$store.commit('ADD_TODO', todo);
 			this.newTodo = '';
 		},
 		toggleTodo(clickedTodo) {
 			this.todos.map((todo) => {
 				if (todo.id === clickedTodo.id) {
 					todo.isComplete = !todo.isComplete;
+				}
+			});
+		},
+		removeTodo(clickedTodo) {
+			this.todos.map((todo) => {
+				if (todo.id === clickedTodo.id) {
+					this.todos.splice(this.todos.indexOf(clickedTodo), 1);
+				}
+			});
+		},
+		editTodo(clickedTodo) {
+			this.todos.map((todo) => {
+				if (todo.id === clickedTodo.id) {
+					this.newTodo = clickedTodo.item;
+					this.todos.splice(this.todos.indexOf(clickedTodo), 1);
 				}
 			});
 		},
@@ -58,5 +77,11 @@ export default {
 <style scoped>
 .complete {
 	text-decoration: line-through;
+}
+
+.todo__list {
+	display: flex;
+	justify-content: center;
+	align-items: center;
 }
 </style>
